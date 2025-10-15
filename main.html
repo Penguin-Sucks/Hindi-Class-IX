@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>प्रेमचंद के फटे जूते - एक इंटरैक्टिव सफ़र</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Tiro+Devanagari+Hindi:wght@400;700&display=swap" rel="stylesheet">
+    <!-- Chosen Palette: Sahitya Palette (Warm Neutrals - Beige, Browns, Muted Greens) -->
+    <!-- Application Structure Plan: A tabbed single-page application with five sections: 'चित्र-विश्लेषण', 'दो दुनियाएँ', 'आज की दुनिया', 'रचनात्मक कोना', and 'शब्दावली'. This structure breaks down the learning material into logical, interactive modules, allowing students to explore non-linearly. It's more engaging than a simple scroll and mimics a digital learning environment, making it intuitive for students to navigate and focus on one activity at a time. -->
+    <!-- Visualization & Content Choices: 1. 'चित्र-विश्लेषण': Uses interactive hotspots on an image (JS click events) to encourage exploration and focused analysis. Goal: Analyze. 2. 'दो दुनियाएँ': Presents a comparison table (HTML/Grid) for clarity and adds a Chart.js bar chart to visually quantify the abstract concepts of 'Truth' vs. 'Pretense'. Goal: Compare/Visualize. 3. 'आज की दुनिया': Uses an accordion layout (JS toggle) for case studies to keep the UI clean and present information on demand. Goal: Apply. 4. 'रचनात्मक कोना' & 'शब्दावली': Use styled cards/lists (HTML/Tailwind) for clear presentation of prompts and definitions. Goal: Create/Inform. Confirmed NO SVG/Mermaid. -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body {
+            font-family: 'Tiro Devanagari Hindi', serif;
+            background-color: #FDFBF5;
+            color: #4A403A;
+        }
+        .nav-button {
+            transition: all 0.3s ease;
+            border-bottom: 2px solid transparent;
+        }
+        .nav-button.active, .nav-button:hover {
+            color: #A47551;
+            border-bottom-color: #A47551;
+        }
+        .content-section {
+            display: none;
+            animation: fadeIn 0.5s ease-in-out;
+        }
+        .content-section.active {
+            display: block;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .card {
+            background-color: #FFF;
+            border: 1px solid #EAE0D5;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px rgba(0,0,0,0.1);
+        }
+        .accordion-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.5s ease-in-out;
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 300px;
+            max-height: 400px;
+        }
+        @media (min-width: 768px) {
+            .chart-container {
+                height: 350px;
+            }
+        }
+    </style>
+</head>
+<body class="antialiased">
+
+    <div class="container mx-auto px-4 py-8">
+        <header class="text-center mb-8">
+            <h1 class="text-4xl md:text-5xl font-bold text-[#A47551]">प्रेमचंद के फटे जूते</h1>
+            <p class="text-lg md:text-xl mt-2 text-[#6B5E53]">हरिशंकर परसाई द्वारा रचित व्यंग्य का एक इंटरैक्टिव सफ़र</p>
+        </header>
+
+        <nav class="flex justify-center flex-wrap gap-4 md:gap-8 border-b-2 border-[#EAE0D5] mb-8 pb-3">
+            <button class="nav-button text-lg font-semibold px-2 py-2 active" data-target="chitra">चित्र-विश्लेषण</button>
+            <button class="nav-button text-lg font-semibold px-2 py-2" data-target="duniya">दो दुनियाएँ</button>
+            <button class="nav-button text-lg font-semibold px-2 py-2" data-target="aaj">आज की दुनिया</button>
+            <button class="nav-button text-lg font-semibold px-2 py-2" data-target="rachna">रचनात्मक कोना</button>
+            <button class="nav-button text-lg font-semibold px-2 py-2" data-target="shabd">शब्दावली</button>
+        </nav>
+
+        <main>
+            <section id="chitra" class="content-section active">
+                <div class="text-center mb-6">
+                    <h2 class="text-3xl font-bold text-[#A47551] mb-2">एक तस्वीर, कई सवाल</h2>
+                    <p class="text-md text-[#6B5E53] max-w-3xl mx-auto">इस खंड में, हम प्रेमचंद की प्रसिद्ध तस्वीर के हर हिस्से को करीब से देखेंगे और उसके पीछे छिपे गहरे अर्थों को समझेंगे। तस्वीर के हिस्सों पर क्लिक करके और जानिए।</p>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
+                    <div class="relative w-full max-w-md mx-auto">
+                        <img src="https://placehold.co/600x400/EAE0D5/4A403A?text=प्रेमचंद+का+चित्र" alt="प्रेमचंद और उनकी पत्नी" class="rounded-lg shadow-lg w-full h-auto">
+                    </div>
+                    <div class="space-y-4">
+                        <div class="card p-4 rounded-lg cursor-pointer" onclick="toggleDetails('muskan-details')">
+                            <h3 class="text-xl font-bold text-[#A47551]">व्यंग्य भरी मुस्कान</h3>
+                            <div id="muskan-details" class="accordion-content">
+                                <p class="mt-2 text-sm italic text-gray-500"><strong>पाठ से:</strong> "यह कैसी मुस्कान है? इसमें दर्द है, व्यंग्य है, विश्वास है।"</p>
+                                <div class="mt-3">
+                                    <h4 class="font-semibold">सोचो:</h4>
+                                    <ul class="list-disc list-inside text-[#4A403A] mt-1 space-y-1">
+                                        <li>प्रेमचंद किस पर हंस रहे हैं? क्या वे अपनी गरीबी पर हंस रहे हैं, या उन लोगों पर जो दिखावा करते हैं?</li>
+                                        <li>क्या कोई व्यक्ति मुश्किल हालात में भी आत्मविश्वास से मुस्कुरा सकता है? कैसे?</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card p-4 rounded-lg cursor-pointer" onclick="toggleDetails('kapde-details')">
+                            <h3 class="text-xl font-bold text-[#A47551]">सादे कपड़े</h3>
+                            <div id="kapde-details" class="accordion-content">
+                                <p class="mt-2 text-sm italic text-gray-500"><strong>पाठ से:</strong> "कपड़े बदलने का गुण उसमें नहीं है।"</p>
+                                <div class="mt-3">
+                                    <h4 class="font-semibold">सोचो:</h4>
+                                    <ul class="list-disc list-inside text-[#4A403A] mt-1 space-y-1">
+                                        <li>प्रेमचंद के कपड़े उनके व्यक्तित्व के बारे में क्या बताते हैं?</li>
+                                        <li>क्या किसी व्यक्ति की पहचान उसके कपड़ों से होनी चाहिए? क्यों या क्यों नहीं?</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card p-4 rounded-lg cursor-pointer" onclick="toggleDetails('jute-details')">
+                            <h3 class="text-xl font-bold text-[#A47551]">फटा जूता और झाँकती अँगुली</h3>
+                             <div id="jute-details" class="accordion-content">
+                                <p class="mt-2 text-sm italic text-gray-500"><strong>पाठ से:</strong> "पाँव की अँगुली बाहर निकल आई है... यह उन सब पर हँस रही है जो अँगुली छिपाए और तलवा घिसाए चले जा रहे हैं।"</p>
+                                <div class="mt-3">
+                                    <h4 class="font-semibold">सोचो:</h4>
+                                    <ul class="list-disc list-inside text-[#4A403A] mt-1 space-y-1">
+                                        <li>यह फटा जूता केवल एक जूता है या कुछ और? यह प्रेमचंद के किस गुण का प्रतीक है?</li>
+                                        <li>बाहर निकली हुई अँगुली समाज की किस चीज़ की ओर इशारा कर रही है?</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            
+            <section id="duniya" class="content-section">
+                 <div class="text-center mb-6">
+                    <h2 class="text-3xl font-bold text-[#A47551] mb-2">दो दुनियाएँ, दो जूते</h2>
+                    <p class="text-md text-[#6B5E53] max-w-3xl mx-auto">यहाँ हम प्रेमचंद के जूते (सच्चाई) और लेखक के जूते (दिखावा) के बीच के अंतर का विश्लेषण करेंगे। यह तालिका हमें दो अलग-अलग जीवन-दृष्टियों को समझने में मदद करती है।</p>
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="min-w-full bg-white border border-[#EAE0D5] rounded-lg shadow-md">
+                        <thead class="bg-[#F5F5DC]">
+                            <tr>
+                                <th class="py-3 px-4 text-left font-bold text-[#A47551]">गुण / स्थिति</th>
+                                <th class="py-3 px-4 text-left font-bold text-[#A47551]">प्रेमचंद का जूता (सच्चाई की दुनिया)</th>
+                                <th class="py-3 px-4 text-left font-bold text-[#A47551]">लेखक का जूता (दिखावे की दुनिया)</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr class="border-b border-[#EAE0D5]">
+                                <td class="py-3 px-4 font-semibold">ऊपरी दिखावा</td>
+                                <td class="py-3 px-4">फटा हुआ, जैसा है वैसा दिखता है।</td>
+                                <td class="py-3 px-4">ऊपर से सुंदर और ठीक दिखता है।</td>
+                            </tr>
+                            <tr class="border-b border-[#EAE0D5] bg-[#FDFBF5]">
+                                <td class="py-3 px-4 font-semibold">अंदर की सच्चाई</td>
+                                <td class="py-3 px-4">अँगुली सुरक्षित है, आत्मा मजबूत है।</td>
+                                <td class="py-3 px-4">तलवा घिस चुका है, अंदर से कमजोर है।</td>
+                            </tr>
+                            <tr class="border-b border-[#EAE0D5]">
+                                <td class="py-3 px-4 font-semibold">समाज का सामना</td>
+                                <td class="py-3 px-4">समाज की कुरीतियों को ठोकर मारता है।</td>
+                                <td class="py-3 px-4">कमजोरियों को छिपाकर, समझौता करके चलता है।</td>
+                            </tr>
+                             <tr class="bg-[#FDFBF5]">
+                                <td class="py-3 px-4 font-semibold">व्यक्तित्व</td>
+                                <td class="py-3 px-4">स्वाभिमानी, सच्चा, अक्खड़।</td>
+                                <td class="py-3 px-4">मध्यवर्गीय, समझौतावादी, अपनी स्थिति छिपाने वाला।</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                 <div class="text-center mt-8">
+                    <p class="font-bold text-xl text-[#A47551]">चर्चा के लिए प्रश्न:</p>
+                    <p class="mt-2 text-lg">आप इन दोनों में से कौन-सा जीवन बेहतर मानते हैं और क्यों?</p>
+                </div>
+                <div class="mt-12">
+                     <h3 class="text-2xl font-bold text-center text-[#A47551] mb-4">सच्चाई बनाम दिखावा: एक दृश्य तुलना</h3>
+                     <div class="chart-container">
+                        <canvas id="comparisonChart"></canvas>
+                    </div>
+                </div>
+            </section>
+
+            <section id="aaj" class="content-section">
+                <div class="text-center mb-6">
+                    <h2 class="text-3xl font-bold text-[#A47551] mb-2">आज की दुनिया से</h2>
+                    <p class="text-md text-[#6B5E53] max-w-3xl mx-auto">पाठ के विचार आज भी प्रासंगिक हैं। इन छोटी कहानियों को पढ़ें और सोचें कि प्रेमचंद के सिद्धांत आज की समस्याओं को सुलझाने में कैसे मदद कर सकते हैं।</p>
+                </div>
+                <div class="max-w-3xl mx-auto space-y-4">
+                    <div class="card rounded-lg overflow-hidden">
+                        <button class="w-full text-left p-4 font-bold text-xl bg-[#F5F5DC] text-[#A47551] flex justify-between items-center" onclick="toggleDetails('case1')">
+                            <span>केस स्टडी 1: रिया का बर्थडे</span>
+                            <span class="text-2xl transform transition-transform duration-300">+</span>
+                        </button>
+                        <div id="case1" class="accordion-content p-4 pt-0">
+                            <p class="text-[#4A403A]">रिया के सभी दोस्त इंस्टाग्राम पर अपने महंगे जन्मदिन की तस्वीरें डालते हैं। रिया के माता-पिता बहुत महंगा जश्न नहीं मना सकते। रिया दुखी है क्योंकि उसके पास दिखाने के लिए "परफेक्ट" तस्वीरें नहीं होंगी।</p>
+                            <p class="font-bold mt-3 text-[#A47551]">प्रश्न: रिया को क्या करना चाहिए? क्या सच्ची खुशी और दिखावे की खुशी में कोई अंतर है?</p>
+                        </div>
+                    </div>
+                    <div class="card rounded-lg overflow-hidden">
+                        <button class="w-full text-left p-4 font-bold text-xl bg-[#F5F5DC] text-[#A47551] flex justify-between items-center" onclick="toggleDetails('case2')">
+                            <span>केस स्टडी 2: साहिल के जूते</span>
+                             <span class="text-2xl transform transition-transform duration-300">+</span>
+                        </button>
+                        <div id="case2" class="accordion-content p-4 pt-0">
+                            <p class="text-[#4A403A]">साहिल के स्कूल के स्पोर्ट्स डे में सभी बच्चे ब्रांडेड जूते पहनकर आते हैं। साहिल एक बहुत अच्छा धावक है, लेकिन उसके जूते साधारण हैं। उसके कुछ दोस्त उसका मजाक उड़ाते हैं।</p>
+                            <p class="font-bold mt-3 text-[#A47551]">प्रश्न: साहिल को इस स्थिति में कैसा महसूस करना चाहिए और उसे क्या जवाब देना चाहिए? क्या जूतों से उसकी काबिलियत कम हो जाती है?</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="rachna" class="content-section">
+                <div class="text-center mb-6">
+                    <h2 class="text-3xl font-bold text-[#A47551] mb-2">रचनात्मक कोना</h2>
+                    <p class="text-md text-[#6B5E53] max-w-3xl mx-auto">अब आपकी बारी है! अपनी समझ और रचनात्मकता का उपयोग करके नीचे दी गई गतिविधियों में से कोई एक चुनें और अपनी सोच को पंख दें।</p>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div class="card p-6 rounded-lg text-center">
+                        <div class="text-4xl mb-3">🎨</div>
+                        <h3 class="text-xl font-bold mb-2">कार्टून बनाओ</h3>
+                        <p>"दिखावा vs सादगी" विषय पर एक कार्टून बनाएं। एक तरफ एक व्यक्ति है जो बहुत खुश दिख रहा है लेकिन अंदर से दुखी है, और दूसरी तरफ एक साधारण व्यक्ति है जो अपनी छोटी सी दुनिया में संतुष्ट है।</p>
+                    </div>
+                    <div class="card p-6 rounded-lg text-center">
+                        <div class="text-4xl mb-3">💬</div>
+                        <h3 class="text-xl font-bold mb-2">संवाद लिखो</h3>
+                        <p>प्रेमचंद के फटे जूते और आज के एक ब्रांडेड जूते के बीच बातचीत की कल्पना करो और उसे संवाद के रूप में लिखो। वे एक-दूसरे से क्या कहेंगे?</p>
+                    </div>
+                    <div class="card p-6 rounded-lg text-center">
+                        <div class="text-4xl mb-3">✒️</div>
+                        <h3 class="text-xl font-bold mb-2">कविता की पंक्तियाँ</h3>
+                        <p>पाठ के मूल भाव को व्यक्त करती हुई चार पंक्तियों की एक कविता लिखो।<br> <em class="text-sm">उदाहरण: ऊपर से फटा तो क्या हुआ, अंदर ज़मीर तो ज़िंदा है...</em></p>
+                    </div>
+                </div>
+            </section>
+
+            <section id="shabd" class="content-section">
+                <div class="text-center mb-6">
+                    <h2 class="text-3xl font-bold text-[#A47551] mb-2">शब्दावली</h2>
+                    <p class="text-md text-[#6B5E53] max-w-3xl mx-auto">पाठ में कुछ महत्वपूर्ण शब्द आए हैं जिनके अर्थ को समझना आवश्यक है। यह शब्दावली आपको पाठ की गहराई को समझने में मदद करेगी।</p>
+                </div>
+                <div class="max-w-4xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-4">
+                     <div class="card p-4 rounded-lg">
+                        <h3 class="font-bold text-xl text-[#A47551]">व्यंग्य (Satire)</h3>
+                        <p>हँसी-मजाक में कही गई गंभीर या चुभने वाली बात। (जैसे- किसी मोटे व्यक्ति को कहना, "और भाई, हवा से उड़ तो नहीं जाओगे?")</p>
+                    </div>
+                    <div class="card p-4 rounded-lg">
+                        <h3 class="font-bold text-xl text-[#A47551]">पाखंड (Hypocrisy)</h3>
+                        <p>जैसा होना नहीं, वैसा दिखने का ढोंग करना। (जैसे- जो व्यक्ति खुद झूठ बोलता है, पर दूसरों को ईमानदारी का पाठ पढ़ाता है।)</p>
+                    </div>
+                    <div class="card p-4 rounded-lg">
+                        <h3 class="font-bold text-xl text-[#A47551]">स्वाभिमान (Self-Respect)</h3>
+                        <p>अपने आत्म-सम्मान को बनाए रखना; किसी के सामने न झुकना।</p>
+                    </div>
+                    <div class="card p-4 rounded-lg">
+                        <h3 class="font-bold text-xl text-[#A47551]">उपहास (Mockery)</h3>
+                        <p>मज़ाक उड़ाना; खिल्ली उड़ाना।</p>
+                    </div>
+                     <div class="card p-4 rounded-lg md:col-span-2">
+                        <h3 class="font-bold text-xl text-[#A47551]">टीला (Obstacle/Mound)</h3>
+                        <p>यहाँ इसका अर्थ है - समाज में फैली बुराइयाँ, बाधाएँ और गलत परंपराएँ जिनसे व्यक्ति को समझौता करना पड़ता है।</p>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const navButtons = document.querySelectorAll('.nav-button');
+            const contentSections = document.querySelectorAll('.content-section');
+
+            function showSection(targetId) {
+                contentSections.forEach(section => {
+                    section.classList.remove('active');
+                });
+                document.getElementById(targetId).classList.add('active');
+
+                navButtons.forEach(button => {
+                    button.classList.remove('active');
+                    if (button.dataset.target === targetId) {
+                        button.classList.add('active');
+                    }
+                });
+                 if (targetId === 'duniya') {
+                    renderChart();
+                }
+            }
+
+            navButtons.forEach(button => {
+                button.addEventListener('click', () => {
+                    const targetId = button.dataset.target;
+                    showSection(targetId);
+                });
+            });
+
+            showSection('chitra');
+        });
+
+        function toggleDetails(elementId) {
+            const element = document.getElementById(elementId);
+            const parentButton = element.closest('.card').querySelector('button');
+            const icon = parentButton ? parentButton.querySelector('span:last-child') : null;
+
+            if (element.style.maxHeight) {
+                element.style.maxHeight = null;
+                if(icon) icon.style.transform = 'rotate(0deg)';
+            } else {
+                element.style.maxHeight = element.scrollHeight + "px";
+                if(icon) icon.style.transform = 'rotate(45deg)';
+            }
+        }
+        
+        let comparisonChartInstance = null;
+        function renderChart() {
+             if (comparisonChartInstance) {
+                return;
+            }
+            const ctx = document.getElementById('comparisonChart').getContext('2d');
+            const chartData = {
+                labels: ['सच्चाई', 'स्वाभिमान', 'समझौता', 'दिखावा'],
+                datasets: [
+                    {
+                        label: 'प्रेमचंद का जूता',
+                        data: [90, 95, 10, 5],
+                        backgroundColor: 'rgba(164, 117, 81, 0.7)',
+                        borderColor: 'rgba(164, 117, 81, 1)',
+                        borderWidth: 1
+                    },
+                    {
+                        label: 'लेखक का जूता',
+                        data: [40, 50, 85, 90],
+                        backgroundColor: 'rgba(107, 94, 83, 0.7)',
+                        borderColor: 'rgba(107, 94, 83, 1)',
+                        borderWidth: 1
+                    }
+                ]
+            };
+
+            comparisonChartInstance = new Chart(ctx, {
+                type: 'bar',
+                data: chartData,
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                             max: 100,
+                             ticks: {
+                                color: '#4A403A'
+                             }
+                        },
+                        x: {
+                             ticks: {
+                                color: '#4A403A',
+                                font: {
+                                    family: "'Tiro Devanagari Hindi', serif",
+                                    size: 14
+                                }
+                             }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            labels: {
+                                color: '#4A403A',
+                                font: {
+                                     family: "'Tiro Devanagari Hindi', serif",
+                                     size: 14
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+    </script>
+</body>
+</html>
